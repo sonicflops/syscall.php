@@ -245,7 +245,20 @@ function modeCall($val, $base) {
 	die("Error: rax/eax register value is not valid");	
 }
 
+function modeName($name) {
+  $valid = [];
+  $entries = loadCache();
+  foreach($entries as $entry) {
+    if(strpos($entry->name(), $name)) {
+      $valid[] = $entry;
+    }
+  }
+  foreach($valid as $entry) {
+    printSysCall($entry);
+  }
 
+  echo "Found ". count($valid) . " valid entries\n";
+}
 
 $machine = SysCallEntry::MACHINE_64BIT;
 $raw = 'json';
@@ -293,6 +306,12 @@ for($i = 0; $i < $argc; $i++) {
 			$i++;
 			$index = $argv[$i];
 			break;
+		case 'name':
+			if($i == $last){ break; };
+			$mode = 'name';
+			$i++;
+			$index = $argv[$i];
+      break;
 		case '-h':
 		case '--help':
 		case 'help':
@@ -303,8 +322,9 @@ for($i = 0; $i < $argc; $i++) {
 
 
 switch($mode) {
-	case 'single': modeSingleIndex($index); break;
-	case 'call': modeCall($index, $base); break;
-	default: modeAll(); break;
+	case 'single':  modeSingleIndex($index);  break;
+	case 'call':    modeCall($index, $base);  break;
+	case 'name':    modeName($index);         break;
+	default:        modeAll();                break;
 	
 }
